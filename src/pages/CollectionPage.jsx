@@ -234,8 +234,10 @@ const CollectionPage = () => {
             background-color: #000;
         }
         .collection-hero-image {
+            // width: 100%;
             width: 100%;
-            height: 100%;
+            // height: 100%;
+            height: 68vh;
             object-fit: cover;
             display: block;
         }
