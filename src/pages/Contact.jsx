@@ -1,8 +1,83 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 const Contact = () => {
+
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTnbF8DweZ_xvsnhT5Bohu5aSYCAEJ8dFIlRo7PkiVJTN6oFnMjBmaWTpgFGkJfMzP3Q/exec";
+
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: ""
+
+  });
+
+  const handleChange = (e) => {
+
+    setFormData({
+
+      ...formData,
+
+      [e.target.name]: e.target.value
+
+    });
+
+  }
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    setLoading(true);
+
+
+    try {
+
+      await fetch(GOOGLE_SCRIPT_URL, {
+
+        method: "POST",
+
+        mode: "no-cors",
+
+        body: JSON.stringify(formData)
+
+      });
+
+
+      alert("Message sent successfully");
+
+
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: ""
+      });
+
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert("Something went wrong");
+
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -76,31 +151,55 @@ const Contact = () => {
 
           <motion.div initial="hidden" animate="visible" variants={fadeUp} className="contact-form-wrapper">
             <h2>Send a Message</h2>
-            <form className="contact-form" onSubmit={(e) => { e.preventDefault(); alert('Message sent successfully!'); }}>
+            <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-group grid-2">
                 <div>
                   <label>First Name</label>
-                  <input type="text" placeholder="First Name" required />
+                  <input type="text"
+
+                    name="firstName"
+
+                    value={formData.firstName}
+
+                    onChange={handleChange} placeholder="First Name" required />
                 </div>
                 <div>
                   <label>Last Name</label>
-                  <input type="text" placeholder="Last Name" required />
+                  <input type="text"
+
+                    name="lastName"
+
+                    value={formData.lastName}
+
+                    onChange={handleChange} placeholder="Last Name" required />
                 </div>
               </div>
 
               <div className="form-group">
                 <label>Email Address</label>
-                <input type="email" placeholder="Email Address" required />
+                <input type="email"
+
+                  name="email"
+
+                  value={formData.email}
+
+                  onChange={handleChange} placeholder="Email Address" required />
               </div>
 
               <div className="form-group">
                 <label>Phone Number</label>
-                <input type="tel" placeholder="Phone Number" />
+                <input type="tel"
+
+                  name="phone"
+
+                  value={formData.phone}
+
+                  onChange={handleChange} placeholder="Phone Number" />
               </div>
 
               <div className="form-group">
                 <label>Subject</label>
-                <select required>
+                <select name="subject" value={formData.subject} onChange={handleChange} required>
                   <option value="">Select a subject</option>
                   <option value="General Inquiry">General Inquiry</option>
                   <option value="Product Information">Product Information</option>
@@ -111,10 +210,25 @@ const Contact = () => {
 
               <div className="form-group">
                 <label>Message</label>
-                <textarea rows="5" placeholder="How can we help you?" required></textarea>
+                <textarea name="message" value={formData.message} onChange={handleChange} rows="5" placeholder="How can we help you?" required></textarea>
               </div>
 
-              <button type="submit" className="submit-btn">Send Message</button>
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={loading}
+              >
+
+                {loading ? (
+                  <>
+                    <span className="loader"></span>
+                    Sending...
+                  </>
+                ) : (
+                  "Send Message"
+                )}
+
+              </button>
             </form>
           </motion.div>
         </div>
@@ -279,6 +393,32 @@ const Contact = () => {
           transform: translateY(-2px);
           box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
         }
+
+        .submit-btn:disabled {
+  opacity:0.7;
+  cursor:not-allowed;
+}
+
+
+.loader {
+  width:18px;
+  height:18px;
+  border:3px solid white;
+  border-top:3px solid transparent;
+  border-radius:50%;
+  display:inline-block;
+  animation:spin 0.8s linear infinite;
+}
+
+
+@keyframes spin {
+  from {
+    transform:rotate(0deg);
+  }
+  to {
+    transform:rotate(360deg);
+  }
+}
 
         @media (max-width: 992px) {
           .contact-grid {
